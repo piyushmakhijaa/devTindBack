@@ -4,11 +4,11 @@ import bcrypt from "bcrypt"
 const authRouter = express.Router();
 
 authRouter.post("/signup", async(req,res)=>{
+    try{
+        console.log(req.body);
     const user = new User(req.body);
     const {password} = req.body;
 
-    console.log(req.body);
-try{
    
   const hashPass = await bcrypt.hash(password,10);
   user.password = hashPass;
