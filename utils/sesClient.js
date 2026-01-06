@@ -1,7 +1,7 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
 const sesClient = new SESClient({
-  region: "ap-south-1", // MUST match SES region
+  region: "eu-north-1", // MUST match SES region
 });
 
 export async function sendEmail({ to, subject, body }) {
