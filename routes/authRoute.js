@@ -1,6 +1,8 @@
 import express from "express";
 import User from "../models/user.js";
 import bcrypt from "bcrypt"
+import { sendEmail } from "../utils/sesClient.js";
+
 const authRouter = express.Router();
 
 authRouter.post("/signup", async(req,res)=>{
@@ -40,6 +42,15 @@ authRouter.post("/login", async(req,res)=>{
 
     if(isPassValid)
     {
+      
+        sendEmail({
+  to: user.emailId,
+  subject: "New login detected",
+  body: `A new login was detected on your account.`,
+}).catch(err => {
+  console.error("Login email failed:", err.message);
+});
+
         res.cookie("Token",token,{path:"/",expires: new Date(Date.now() + 900000)});
         res.send({_id:user._id,
             firstName:user.firstName,
