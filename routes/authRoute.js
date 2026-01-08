@@ -46,7 +46,7 @@ authRouter.post("/login", async(req,res)=>{
         sendEmail({
   to: user.emailId,
   subject: "New login detected",
-  body: `A new login was detected on your account.`,
+  body: `A new login was detected on your devTinder Account at ${new Date()}`,
 }).catch(err => {
   console.error("Login email failed:", err.message);
 });

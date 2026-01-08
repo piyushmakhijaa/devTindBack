@@ -9,7 +9,7 @@ import profileRouter from "./routes/profileRoute.js";
 import requestRouter from "./routes/request.js";
 import bcrypt from "bcrypt";
 import userRouter from "./routes/userRouter.js";
-
+import { timeCron } from "./utils/timeCron.js";
 dotenv.config();
 
 const port = 3000;
@@ -36,7 +36,7 @@ connectDB().then(()=>{
 })
 
 
-
+timeCron();
 
 
 app.delete("/delete", async(req,res)=>{
