@@ -8,14 +8,16 @@ import authRouter from "./routes/authRoute.js";
 import profileRouter from "./routes/profileRoute.js";
 import requestRouter from "./routes/request.js";
 import bcrypt from "bcrypt";
+import instance from "./utils/razorpayInitiate.js";
 import userRouter from "./routes/userRouter.js";
+import authToken from "./middleware/authToken.js";
 dotenv.config();
-
+console.log(process.env.RAZORPAY_KEY_ID)
 const port = 3000;
 const app = express();
 app.use(express.json());
 app.use(cors({
-    origin : "http://13.48.192.52",
+    origin : ["http://13.48.192.52","http://localhost:5173"],
     credentials : true
 }));
 app.use(cookieParser());
@@ -33,9 +35,6 @@ connectDB().then(()=>{
 }).catch((err)=>{
     console.log(`ERROR : ${err}`);
 })
-
-
-timeCron();
 
 
 app.delete("/delete", async(req,res)=>{
@@ -69,6 +68,45 @@ try{
     res.send(err.message);
 }
 })
+ 
+app.post("/payment/create",authToken , async(req,res)=>{
+ try{
+    const id = req.user._id;
+    const data = req.body;
+    //console.log(id);
 
+   var options = {
+  amount: data.amount*100,  // Amount is in currency subunits. 
+  currency: "INR",
+  receipt: "order_rcptid_1",
+  notes : {
+    firstName : req.user.firstName,
+    lastName : req.user.lastName,
+    membershipType : data.membershipType
+  }
+};
+
+instance.orders.create(options, function (err, order) {
+  if (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Razorpay order creation failed",
+      error: err,
+    });
+  }
+
+  res.json({
+    order,
+    key : process.env.RAZORPAY_KEY_ID
+  });
+});
+
+}catch(err){
+    console.log(err);
+return res.status(500).json({apiError : err.message});
+}    
+
+})
 
 
