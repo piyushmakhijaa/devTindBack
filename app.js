@@ -86,7 +86,7 @@ app.post("/payment/create",authToken , async(req,res)=>{
  try{
     const id = req.user._id;
     const data = req.body;
-    const {firstName,lastName, emailId} = req.user;
+    const {firstName,lastName, emailId,phone} = req.user;
     //console.log(id);
 
    var options = {
@@ -94,8 +94,10 @@ app.post("/payment/create",authToken , async(req,res)=>{
   currency: "INR",
   receipt: "order_rcptid_1",
   notes : {
-    firstName : req.user.firstName,
-    lastName : req.user.lastName,
+    firstName : firstName,
+    lastName : lastName,
+    phone :phone,
+    emailId : emailId,
     membershipType : data.membershipType
   }
 };
@@ -112,7 +114,8 @@ instance.orders.create(options, function (err, order) {
 
   res.json({
     order,
-    key : process.env.RAZORPAY_KEY_ID
+    key : process.env.RAZORPAY_KEY_ID,
+    
   });
 });
 
