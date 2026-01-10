@@ -23,6 +23,15 @@ const userSchema = mongoose.Schema({
             }
         }
     },
+phone: {
+  type: String,
+  required: true,
+  validate(value) {
+    if (!validator.isMobilePhone(value, "any")) {
+      throw new Error("Invalid mobile number" + value);
+    }
+  }
+},
     password:{
         type: String,
         required:true

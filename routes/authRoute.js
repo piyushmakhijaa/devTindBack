@@ -55,6 +55,7 @@ authRouter.post("/login", async(req,res)=>{
         res.send({_id:user._id,
             firstName:user.firstName,
             lastName:user.lastName,
+            emailId : user.emailId,
             photoUrl:user.photoUrl,
             age:user.age,
             gender:user.gender,

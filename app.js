@@ -57,13 +57,26 @@ app.delete("/delete", async(req,res)=>{
 })
 
 
-app.patch("/user", async(req,res)=>{
-    const id = req.body.userId;
+app.patch("/user", authToken, async(req,res)=>{
+    const id = req.user._id;
+    
+    let skills = req.body.skills.trim().split(',');
+    req.body.skills = skills;
+    
     const data = req.body;
+    console.log(data);
 try{
   const user =  await User.findByIdAndUpdate(id,data,{returnDocument:'after',runValidators : true});
   console.log(user);
-   res.send(`USER UPDATED TO : ${user}`);
+   res.send(({_id:user._id,
+            firstName:user.firstName,
+            lastName:user.lastName,
+            emailId : user.emailId,
+            photoUrl:user.photoUrl,
+            age:user.age,
+            gender:user.gender,
+            about:user.about,
+            skills:user.skills}));
 }catch(err){
     res.send(err.message);
 }
@@ -73,6 +86,7 @@ app.post("/payment/create",authToken , async(req,res)=>{
  try{
     const id = req.user._id;
     const data = req.body;
+    const {firstName,lastName, emailId} = req.user;
     //console.log(id);
 
    var options = {
