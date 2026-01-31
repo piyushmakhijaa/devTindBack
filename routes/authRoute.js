@@ -42,11 +42,14 @@ authRouter.post("/login", async(req,res)=>{
 
     if(isPassValid)
     {
+        const istTime = new Date().toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+});
       
         sendEmail({
   to: user.emailId,
   subject: "New login detected",
-  body: `A new login was detected on your devTinder Account at ${new Date()}`,
+  body: `A new login was detected on your devTinder Account at ${istTime}`,
 }).catch(err => {
   console.error("Login email failed:", err.message);
 });
