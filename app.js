@@ -62,7 +62,7 @@ app.delete("/delete", async(req,res)=>{
 
 app.patch("/user", authToken, async(req,res)=>{
     const id = req.user._id;
-    //const data = req.body;
+    const data = req.body;
     
      let skills = req.body.skills.trim().split(',');
      req.body.skills = skills;

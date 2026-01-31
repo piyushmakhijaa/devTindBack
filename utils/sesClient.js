@@ -6,7 +6,7 @@ const sesClient = new SESClient({
 
 export async function sendEmail({ to, subject, body }) {
   const command = new SendEmailCommand({
-    Source: "piyushwebalerts.online@gmail.com", // must be VERIFIED in SES
+    Source: "alerts@piyushweb.online", // must be VERIFIED in SES
     Destination: {
       ToAddresses: [to],
     },
