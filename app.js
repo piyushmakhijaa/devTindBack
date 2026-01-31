@@ -7,28 +7,31 @@ import cookieParser from "cookie-parser";
 import authRouter from "./routes/authRoute.js";
 import profileRouter from "./routes/profileRoute.js";
 import requestRouter from "./routes/request.js";
-import bcrypt from "bcrypt";
+import initializeSocket from "./utils/socket.js";
 import instance from "./utils/razorpayInitiate.js";
 import userRouter from "./routes/userRouter.js";
 import authToken from "./middleware/authToken.js";
+import { createServer } from "http";
 dotenv.config();
-console.log(process.env.RAZORPAY_KEY_ID)
 const port = 3000;
 const app = express();
 app.use(express.json());
+
 app.use(cors({
     origin : ["http://13.48.192.52","http://localhost:5173"],
     credentials : true
 }));
+
 app.use(cookieParser());
 app.use("/",authRouter);
 app.use("/",profileRouter);
 app.use("/",requestRouter);
 app.use("/",userRouter);
-//console.log(await bcrypt.compare("piyush4","$2b$10$wg8m5YNB5Szs8JeIJA/MNOhtjraiOezrpVx/sPB5SG4Grd9g07Oji"));
+const server = createServer(app);
+initializeSocket(server);
 
 connectDB().then(()=>{
-    app.listen(port,()=>{
+    server.listen(port,()=>{
         console.log(`LISTENING ON PORT ${port}`);
     })
 
@@ -59,12 +62,12 @@ app.delete("/delete", async(req,res)=>{
 
 app.patch("/user", authToken, async(req,res)=>{
     const id = req.user._id;
+    //const data = req.body;
     
-    let skills = req.body.skills.trim().split(',');
-    req.body.skills = skills;
+     let skills = req.body.skills.trim().split(',');
+     req.body.skills = skills;
     
-    const data = req.body;
-    console.log(data);
+    //console.log(data);
 try{
   const user =  await User.findByIdAndUpdate(id,data,{returnDocument:'after',runValidators : true});
   console.log(user);

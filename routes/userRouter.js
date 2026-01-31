@@ -2,16 +2,13 @@ import express from "express";
 import authToken from "../middleware/authToken.js";
 import User from "../models/user.js"
 import connectionRequest from "../models/connectionRequest.js";
-
+import Message from "../models/message.js";
 const userRouter = express.Router();
 
 userRouter.get("/user/requests", authToken, async(req,res)=>{
     
     try{
-
-        
         const loggedInUser = req.user;
-        
         const data =  await connectionRequest.find({
         toUserId : loggedInUser._id,
         status : "interested"
@@ -30,18 +27,31 @@ userRouter.get("/user/requests", authToken, async(req,res)=>{
 userRouter.get("/user/connections", authToken, async(req,res)=>{
      try{
     const loggedInUser = req.user;
-    const data = await connectionRequest.find({
+    const connections = await connectionRequest.find({
         $or:[{ toUserId : loggedInUser._id},
             {fromUserId : loggedInUser._id}],
              status : "accepted"
-    }).populate("fromUserId")
+    }).populate("fromUserId", ["firstName", "lastName", "age","gender","photoUrl","about","skills","_id"])
+    .populate("toUserId",["firstName", "lastName", "age","gender","photoUrl","about","skills","_id"]);
+//console.log(connections);
+    const finalConnections = connections.map(conn => {
+  const isSender = conn.fromUserId._id.equals(loggedInUser._id);
+  return isSender ? conn.toUserId : conn.fromUserId;
+});
 
-    res.json({message : "HERE ARE YOUR CONNECTIONS", data});
+res.json({
+  message: "HERE ARE YOUR CONNECTIONS",
+  data: finalConnections
+});
+
      }catch(err){
         res.status(400).send(err.message);
      }
 });
 
+userRouter.delete("/user/deleteConnection/:id",authToken, async(req,res)=>{
+
+})
 
 userRouter.get("/user/feed",authToken, async(req,res)=>{
            
@@ -87,5 +97,33 @@ userRouter.get("/user/feed",authToken, async(req,res)=>{
 })
 
 
+userRouter.get("/user/chat/:targetUserId", authToken, async(req,res)=>{
+  const loggedInUserId = req.user._id;
+  
+  try{
+   const messages = await Message.find({
+   $or:[
+   
+     {$and:[
+        {senderId : loggedInUserId},
+        {receiverId : req.params.targetUserId}
+    ]},
+    {$and :[
+        {senderId :req.params.targetUserId},
+        {receiverId : loggedInUserId  }
+    ]}
+   ]
+   }).sort({sentAt : 1});
+//console.log(messages);
+   res.send(messages);
+ 
+
+
+  }catch(err){
+    res.send(err);
+}
+
+
+})
 
 export default userRouter;

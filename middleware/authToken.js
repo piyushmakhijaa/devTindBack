@@ -4,7 +4,6 @@ const authToken =  async(req,res,next)=>{
     
     try{
         const {Token} = req.cookies;
-        //console.log(Token);
     if(!Token)
     {
         return res.status(401).send("invalid token");

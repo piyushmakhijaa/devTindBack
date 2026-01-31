@@ -31,7 +31,7 @@ authRouter.post("/login", async(req,res)=>{
     const {emailId,password} = req.body;
 
     const user = await User.findOne({emailId:emailId});
-    console.log(user);
+    //console.log(user);
     if(!user)
     {
     throw new Error("WRONG CREDENTIALS");
